@@ -1,0 +1,152 @@
+CREATE TABLE Salesperson_s (
+    SalespersonID INT PRIMARY KEY,
+    Name VARCHAR(255)
+    -- Other attributes
+    );
+
+CREATE TABLE Customer_s (
+    CustomerID INT PRIMARY KEY,
+    Name VARCHAR(255)
+    -- Other attributes
+);
+
+CREATE TABLE Car_s (
+    CarID INT PRIMARY KEY,
+    SerialNumber VARCHAR(50) UNIQUE,
+    Model VARCHAR(255)
+    -- Other attributes
+);
+
+CREATE TABLE Invoice_s (
+    InvoiceID INT PRIMARY KEY,
+    SalespersonID INT,
+    CustomerID INT,
+    CarID INT,
+    DateIssued DATE,
+    -- Other attributes
+    FOREIGN KEY (SalespersonID) REFERENCES Salesperson_s(SalespersonID),
+    FOREIGN KEY (CustomerID) REFERENCES Customer_s(CustomerID),
+    FOREIGN KEY (CarID) REFERENCES Car_s(CarID)
+);
+
+CREATE TABLE ServiceTicket_s (
+    TicketID INT PRIMARY KEY,
+    CustomerID INT,
+    CarID INT,
+    DateOpened DATE,
+    -- Other attributes
+    FOREIGN KEY (CustomerID) REFERENCES Customer_s(CustomerID),
+    FOREIGN KEY (CarID) REFERENCES Car_s(CarID)
+);
+
+CREATE TABLE ServiceHistory_s (
+    HistoryID INT PRIMARY KEY,
+    CarID INT,
+    ServiceDetails VARCHAR(500),
+    -- Other attributes
+    FOREIGN KEY (CarID) REFERENCES Car_s(CarID)
+);
+
+CREATE TABLE Mechanic_s (
+    MechanicID INT PRIMARY KEY,
+    Name VARCHAR(255)
+    -- Other attributes
+);
+
+CREATE TABLE WorkOn_s (
+    WorkOnID INT PRIMARY KEY,
+    MechanicID INT,
+    CarID INT,
+    -- Other attributes
+    FOREIGN KEY (MechanicID) REFERENCES Mechanic_s(MechanicID),
+    FOREIGN KEY (CarID) REFERENCES Car_s(CarID)
+);
+
+CREATE TABLE Parts_s (
+    PartID INT PRIMARY KEY,
+    Name VARCHAR(255)
+    -- Other attributes
+);
+
+CREATE TABLE CarNeedsParts_s (
+    NeedsPartsID INT PRIMARY KEY,
+    CarID INT,
+    PartID INT,
+    Quantity INT,
+    -- Other attributes
+    FOREIGN KEY (CarID) REFERENCES Car_s(CarID),
+    FOREIGN KEY (PartID) REFERENCES Parts_s(PartID)
+);
+
+-- Salesperson
+INSERT INTO Salesperson_s (SalespersonID, Name)
+VALUES
+  (1, 'John Doe'),
+  (2, 'Jane Smith'),
+  (3, 'Bob Johnson');
+
+-- Customer
+INSERT INTO Customer_s (CustomerID, Name)
+VALUES
+  (101, 'Alice Brown'),
+  (102, 'Charlie Davis'),
+  (103, 'Eva White');
+
+-- Car
+INSERT INTO Car_s (CarID, SerialNumber, Model)
+VALUES
+  (1001, 'ABC123', 'Toyota Camry'),
+  (1002, 'XYZ789', 'Honda Accord'),
+  (1003, 'DEF456', 'Ford Mustang');
+
+-- Invoice
+INSERT INTO Invoice_s (InvoiceID, SalespersonID, CustomerID, CarID, DateIssued)
+VALUES
+  (5001, 1, 101, 1001, '2023-01-15'),
+  (5002, 2, 102, 1002, '2023-02-20'),
+  (5003, 3, 103, 1003, '2023-03-25');
+
+-- ServiceTicket
+INSERT INTO ServiceTicket_s (TicketID, CustomerID, CarID, DateOpened)
+VALUES
+  (10001, 101, 1001, '2023-04-10'),
+  (10002, 102, 1002, '2023-05-15'),
+  (10003, 103, 1003, '2023-06-20');
+
+-- ServiceHistory
+INSERT INTO ServiceHistory_s (HistoryID, CarID, ServiceDetails)
+VALUES
+  (20001, 1001, 'Oil Change, Brake Inspection'),
+  (20002, 1002, 'Tire Rotation, Alignment'),
+  (20003, 1003, 'Engine Tune-Up');
+
+-- Mechanic
+INSERT INTO Mechanic_s (MechanicID, Name)
+VALUES
+  (301, 'Mike Brown'),
+  (302, 'Sara Johnson'),
+  (303, 'Tom Davis');
+
+-- WorkOn
+INSERT INTO WorkOn_s (WorkOnID, MechanicID, CarID)
+VALUES
+  (40001, 301, 1001),
+  (40002, 302, 1002),
+  (40003, 303, 1003);
+
+-- Parts
+INSERT INTO Parts_s (PartID, Name)
+VALUES
+  (501, 'Oil Filter'),
+  (502, 'Brake Pads'),
+  (503, 'Spark Plugs');
+
+-- CarNeedsParts
+INSERT INTO CarNeedsParts_s (NeedsPartsID, CarID, PartID, Quantity)
+VALUES
+  (60001, 1001, 501, 2),
+  (60002, 1002, 502, 1),
+  (60003, 1003, 503, 4);
+
+ 
+ 

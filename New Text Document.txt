@@ -1,0 +1,134 @@
+-- Create tables
+CREATE TABLE IF NOT EXISTS Salesperson_s (
+    SalespersonID INT PRIMARY KEY,
+    Name VARCHAR(255)
+);
+
+CREATE TABLE IF NOT EXISTS Customer_s (
+    CustomerID INT PRIMARY KEY,
+    Name VARCHAR(255)
+);
+
+CREATE TABLE IF NOT EXISTS Car_s (
+    CarID INT PRIMARY KEY,
+    SerialNumber VARCHAR(50) UNIQUE,
+    Model VARCHAR(255)
+);
+
+CREATE TABLE IF NOT EXISTS Invoice_s (
+    InvoiceID INT PRIMARY KEY,
+    SalespersonID INT,
+    CustomerID INT,
+    CarID INT,
+    DateIssued DATE,
+    FOREIGN KEY (SalespersonID) REFERENCES Salesperson_s(SalespersonID),
+    FOREIGN KEY (CustomerID) REFERENCES Customer_s(CustomerID),
+    FOREIGN KEY (CarID) REFERENCES Car_s(CarID)
+);
+
+CREATE TABLE IF NOT EXISTS ServiceTicket_s (
+    TicketID INT PRIMARY KEY,
+    CustomerID INT,
+    CarID INT,
+    DateOpened DATE,
+    FOREIGN KEY (CustomerID) REFERENCES Customer_s(CustomerID),
+    FOREIGN KEY (CarID) REFERENCES Car_s(CarID)
+);
+
+CREATE TABLE IF NOT EXISTS ServiceHistory_s (
+    HistoryID INT PRIMARY KEY,
+    CarID INT,
+    ServiceDetails VARCHAR(500),
+    FOREIGN KEY (CarID) REFERENCES Car_s(CarID)
+);
+
+CREATE TABLE IF NOT EXISTS Mechanic_s (
+    MechanicID INT PRIMARY KEY,
+    Name VARCHAR(255)
+);
+
+CREATE TABLE IF NOT EXISTS WorkOn_s (
+    WorkOnID INT PRIMARY KEY,
+    MechanicID INT,
+    CarID INT,
+    FOREIGN KEY (MechanicID) REFERENCES Mechanic_s(MechanicID),
+    FOREIGN KEY (CarID) REFERENCES Car_s(CarID)
+);
+
+CREATE TABLE IF NOT EXISTS Parts_s (
+    PartID INT PRIMARY KEY,
+    Name VARCHAR(255)
+);
+
+CREATE TABLE IF NOT EXISTS CarNeedsParts_s (
+    NeedsPartsID INT PRIMARY KEY,
+    CarID INT,
+    PartID INT,
+    Quantity INT,
+    FOREIGN KEY (CarID) REFERENCES Car_s(CarID),
+    FOREIGN KEY (PartID) REFERENCES Parts_s(PartID)
+);
+
+-- Insert data
+INSERT INTO Salesperson_s (SalespersonID, Name) VALUES
+  (1, 'John Doe'),
+  (2, 'Jane Smith');
+
+INSERT INTO Customer_s (CustomerID, Name) VALUES
+  (101, 'Alice Brown'),
+  (102, 'Charlie Davis');
+
+INSERT INTO Car_s (CarID, SerialNumber, Model) VALUES
+  (1001, 'ABC123', 'Toyota Camry'),
+  (1002, 'XYZ789', 'Honda Accord');
+
+INSERT INTO Invoice_s (InvoiceID, SalespersonID, CustomerID, CarID, DateIssued) VALUES
+  (5001, 1, 101, 1001, '2023-01-15');
+
+INSERT INTO ServiceTicket_s (TicketID, CustomerID, CarID, DateOpened) VALUES
+  (10001, 101, 1001, '2023-04-10');
+
+INSERT INTO ServiceHistory_s (HistoryID, CarID, ServiceDetails) VALUES
+  (20001, 1001, 'Oil Change, Brake Inspection');
+
+INSERT INTO Mechanic_s (MechanicID, Name) VALUES
+  (301, 'Mike Brown'),
+  (302, 'Sara Johnson');
+
+INSERT INTO WorkOn_s (WorkOnID, MechanicID, CarID) VALUES
+  (40001, 301, 1001);
+
+INSERT INTO Parts_s (PartID, Name) VALUES
+  (501, 'Oil Filter'),
+  (502, 'Brake Pads');
+
+INSERT INTO CarNeedsParts_s (NeedsPartsID, CarID, PartID, Quantity) VALUES
+  (60001, 1001, 501, 2);
+
+-- Stored function to insert additional records into Customer_s table
+DELIMITER //
+CREATE FUNCTION Insert_Customer(Name VARCHAR(255)) RETURNS INT
+BEGIN
+    DECLARE NewID INT;
+    INSERT INTO Customer_s (Name) VALUES (Name);
+    SET NewID = LAST_INSERT_ID();
+    RETURN NewID;
+END//
+DELIMITER ;
+
+-- Insert additional records into Customer_s using the stored function
+SET @NewCustomerID1 = Insert_Customer('Eva White');
+SET @NewCustomerID2 = Insert_Customer('Frank Green');
+
+-- Stored function to insert additional records into Car_s table
+CREATE FUNCTION Insert_Car(SerialNumber VARCHAR(50), Model VARCHAR(255)) RETURNS INT
+BEGIN
+    DECLARE NewCarID INT;
+    INSERT INTO Car_s (SerialNumber, Model) VALUES (SerialNumber, Model);
+    SET NewCarID = LAST_INSERT_ID();
+    RETURN NewCarID;
+END//
+
+-- Insert additional records into Car_s using the stored function
+SET @NewCarID1 = Insert_Car('JKL321', 'Ford Focus');
+SET @NewCarID2 = Insert_Car('MNO987', 'Chevrolet Cruze');
